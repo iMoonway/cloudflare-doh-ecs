@@ -104,7 +104,11 @@ function decodeBase64Url(value: string): Uint8Array | null {
 
 async function readDnsRequest(request: Request, config: WorkerConfig): Promise<Response | Uint8Array> {
   const url = new URL(request.url);
-  if (url.pathname !== config.path) return emptyResponse(404);
+  const expectedPath = config.path;
+  const altPath = config.path + '/dns-query';
+  if (url.pathname !== expectedPath && url.pathname !== altPath) {
+    return emptyResponse(404);
+  }
 
   if (request.method === "GET") {
     const values = url.searchParams.getAll("dns");
